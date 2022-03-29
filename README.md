@@ -28,6 +28,12 @@ yarn
 
 * Create database and change config in `src/data-source.ts` accordingly
 
+* Start the server
+
+```
+yarn start
+```
+
 ## Consider changing 
 
 Return type of ChangePassword resolver from User to UserResponse
