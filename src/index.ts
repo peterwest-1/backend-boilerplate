@@ -18,21 +18,16 @@ const RedisStore = require("connect-redis")(session);
 const main = async () => {
   const connection = await AppDataSource.initialize();
 
-  // await connection.runMigrations();
+  await connection.runMigrations();
 
   const app = express();
   const redis = new Redis(process.env.REDIS_URL);
-  redis.on("connect", () => console.log("Connected to Redis!"));
+  redis.on("connect", () => console.log("CONTRACTOR Server: Connected to Redis!"));
   redis.on("error", (err: Error) => console.log("Redis Client Error", err));
 
-  app.set("proxy", !__prod__);
-
-  app.use(
-    cors({
-      origin: "http://localhost:3000",
-      credentials: true,
-    })
-  );
+  app.set("trust proxy", 1);
+  //"http://localhost:3000"
+  app.use(cors({ origin: true, credentials: true }));
 
   app.use(
     session({
@@ -47,8 +42,8 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 1, // 1 year
         httpOnly: true,
-        sameSite: "lax",
-        secure: __prod__, // cookie only works in https
+        sameSite: "none",
+        secure: true, // cookie only works in https
       },
     })
   );
@@ -69,11 +64,14 @@ const main = async () => {
 
   apolloServer.applyMiddleware({
     app,
-    cors: false,
+    cors: {
+      origin: ["https://studio.apollographql.com"],
+      credentials: true,
+    },
   });
 
   app.listen(process.env.PORT, () => {
-    console.log(`Server started on localhost:${process.env.PORT}`);
+    console.log(`CONTRACTOR Server: Started on localhost:${process.env.PORT}`);
   });
 };
 

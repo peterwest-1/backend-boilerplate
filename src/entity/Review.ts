@@ -1,13 +1,22 @@
 import { IsInt, Min, Max } from "class-validator";
 import { Field, ID, ObjectType } from "type-graphql";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { User } from "./User";
 
 @ObjectType()
 @Entity()
 export class Review extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn("uuid")
-  id!: number;
+  id!: string;
 
   @Field(() => Number, { description: "Rating out of five" })
   @Column()
@@ -20,9 +29,12 @@ export class Review extends BaseEntity {
   @Column("uuid")
   revieweeID: number;
 
-  @Field(() => ID, { description: "The person reviewing ID" })
+  @Field()
   @Column("uuid")
-  reviewerID: number;
+  userId: string;
+
+  @ManyToOne(() => User, (user) => user.reviews)
+  user: User;
 
   @Field(() => String, { description: "Review title" })
   @Column("text")

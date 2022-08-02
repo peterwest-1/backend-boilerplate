@@ -1,12 +1,25 @@
 import { Field, ID, ObjectType } from "type-graphql";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { Contractor } from "./Contractor";
+import { Review } from "./Review";
 
 @ObjectType()
 @Entity()
 export class User extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn("uuid")
-  id!: number;
+  id!: string;
 
   @Field(() => String)
   @Column("varchar", { length: 255, unique: true })
@@ -23,9 +36,16 @@ export class User extends BaseEntity {
   @Column("bool", { default: false })
   confirmed: boolean;
 
-  @Field(() => ID, { nullable: true, description: "Whether user is a contractor" })
+  @Field({ nullable: true })
   @Column("uuid", { nullable: true })
-  contractorId?: number;
+  contractorId: string;
+
+  @OneToOne(() => Contractor, (contractor) => contractor.user)
+  @JoinColumn()
+  contractor: Contractor;
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
 
   @Field(() => Date)
   @CreateDateColumn()

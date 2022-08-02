@@ -1,10 +1,28 @@
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
 import { Contractor } from "../entity/Contractor";
-import { Arg, Int, Query, Resolver } from "type-graphql";
+import { User } from "../entity/User";
+import { isAuthenticated } from "../middleware/isAuthenticated";
+import { RegisterContractorInput } from "../shared/RegisterContractorInput";
+import { MyContext } from "../types";
 
 @Resolver(Contractor)
 export class ContractorResolver {
   @Query(() => Contractor, { nullable: true })
-  review(@Arg("id", () => Int) id: number): Promise<Contractor | null> {
-    return Contractor.findOne({ where: { id } });
+  review(@Arg("id", () => String) id: string): Promise<Contractor | null> {
+    return Contractor.findOneBy({ id });
+  }
+
+  @Mutation(() => Contractor)
+  @UseMiddleware(isAuthenticated)
+  async registerContractor(
+    @Arg("input") input: RegisterContractorInput,
+    @Ctx() { req }: MyContext
+  ): Promise<Contractor> {
+    const contractor = await Contractor.create({
+      ...input,
+      userId: req.session.userId,
+    }).save();
+
+    return contractor;
   }
 }

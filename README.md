@@ -2,4 +2,23 @@
 
 ### Developement
 
-Run yarn watch then yarn dev
+Start PostgreSQL
+Start Redis
+
+For Me locally
+
+```
+redis-server
+```
+
+Run
+
+```
+yarn watch
+```
+
+then
+
+```
+yarn dev
+```

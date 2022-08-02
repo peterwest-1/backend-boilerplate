@@ -1,14 +1,14 @@
 import argon2 from "argon2";
-import { AuthenticationInput } from "../shared/AuthenticationInput";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { COOKIE_NAME } from "../constants";
+import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
+import { AuthenticationInput } from "../shared/AuthenticationInput";
+import { DUPLICATE_EMAIL, EMAIL_DOESNT_EXIST } from "../shared/EmailErrors";
+import { PASSWORD_DOESNT_MATCH } from "../shared/PasswordErrors";
 import { UserResponse } from "../shared/UserResponse";
 import { MyContext } from "../types";
 import { validateRegister } from "../validators/register";
-import { DUPLICATE_EMAIL, EMAIL_DOESNT_EXIST } from "../shared/EmailErrors";
-import { PASSWORD_DOESNT_MATCH } from "../shared/PasswordErrors";
-import { COOKIE_NAME } from "../constants";
-import { redis } from "../redis";
 
 @Resolver(User)
 export class UserResolver {
@@ -17,8 +17,25 @@ export class UserResolver {
     if (!req.session.userId) {
       return null;
     }
-
     return User.findOneBy({ id: req.session.userId });
+  }
+
+  @Query(() => Boolean)
+  async contractor(@Ctx() { req }: MyContext) {
+    if (!req.session.userId) {
+      return false;
+    }
+
+    const cont = await AppDataSource.getRepository(User).findOne({
+      relations: {
+        contractor: true,
+      },
+      where: {
+        id: req.session.userId,
+      },
+    });
+    console.log(cont?.email);
+    return cont ? true : false;
   }
 
   @Mutation(() => UserResponse)
@@ -42,7 +59,7 @@ export class UserResolver {
     // await sendEmail(input.email, await createConfirmationLink(context.url, user?.id as string));
 
     req.session.userId = user?.id;
-    
+
     return { user };
   }
 
