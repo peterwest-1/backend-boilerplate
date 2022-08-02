@@ -1,26 +1,9 @@
-import { Min, Max, MaxLength, Length } from "class-validator";
-
-import { MyContext } from "src/types";
-import { Arg, Ctx, Field, InputType, Int, Mutation, Query, Resolver } from "type-graphql";
+import { ReviewInput } from "../shared/ReviewInput";
+import { MyContext } from "../types";
+import { Arg, Ctx, Int, Mutation, Query, Resolver } from "type-graphql";
 import { Review } from "../entity/Review";
 
-@InputType()
-class ReviewInput {
-  @Field(() => String, { nullable: true })
-  @MaxLength(30)
-  title: string;
-
-  @Field(() => String, { nullable: true })
-  @Length(30, 255)
-  text: string;
-
-  @Field(() => Int, { nullable: true })
-  @Min(0)
-  @Max(5)
-  rating: number;
-}
-
-@Resolver()
+@Resolver(Review)
 export class ReviewResolver {
   @Query(() => [Review])
   reviews(): Promise<Review[]> {
@@ -33,7 +16,7 @@ export class ReviewResolver {
   }
 
   @Mutation(() => Review)
-  async createReview(@Arg("input") input: ReviewInput, @Ctx() { req }: MyContext): Promise<Review> {
+  async createReview(@Arg("input") input: ReviewInput, @Ctx() _: MyContext): Promise<Review> {
     const review = Review.create({
       ...input,
       // creatorId: req.session.userId,
@@ -46,7 +29,7 @@ export class ReviewResolver {
   async updateReview(
     @Arg("id", () => Int) id: number,
     @Arg("input") input: ReviewInput,
-    @Ctx() { req }: MyContext
+    @Ctx() _: MyContext
   ): Promise<Review | null> {
     const review = await Review.findOne({ where: { id } });
     if (!review) {
@@ -65,7 +48,7 @@ export class ReviewResolver {
   }
 
   @Mutation(() => Boolean)
-  async deleteReview(@Arg("id", () => Int) id: number, @Ctx() { req }: MyContext): Promise<boolean> {
+  async deleteReview(@Arg("id", () => Int) id: number, @Ctx() _: MyContext): Promise<boolean> {
     try {
       await Review.delete({ id });
     } catch (error) {
