@@ -29,17 +29,9 @@ export class Contractor extends BaseEntity {
   @Column("varchar", { length: 255 })
   name: string;
 
-  @Field(() => Number, { nullable: true })
-  @Column({ nullable: true }) //update to more explicit
-  contactNumber?: number;
-
-  @Field(() => String)
-  @Column("varchar", { length: 255, nullable: true })
-  website?: string;
-
-  @Field(() => [String], { nullable: true })
-  @Column("simple-array", { nullable: true })
-  services: string[];
+  @Field(() => String, { nullable: true })
+  @Column("varchar", { nullable: true })
+  description?: string;
 
   @Field(() => Date)
   @CreateDateColumn()

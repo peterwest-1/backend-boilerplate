@@ -10,6 +10,7 @@ import { AppDataSource } from "./data-source";
 import { ContractorResolver } from "./resolvers/contractor";
 import { ReviewResolver } from "./resolvers/review";
 import { UserResolver } from "./resolvers/user";
+import { confirmEmail } from "./routes/confirmEmail";
 import { MyContext } from "./types";
 require("dotenv").config();
 
@@ -26,9 +27,18 @@ const main = async () => {
   redis.on("error", (err: Error) => console.log("Redis Client Error", err));
 
   app.set("trust proxy", 1);
-  app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-  app.use(cors({ origin: true, credentials: true }));
 
+  const usingApollo = false;
+
+  const apolloCors = { origin: true, credentials: true };
+  app.use(cors(usingApollo ? apolloCors : { origin: "http://localhost:3000", credentials: true }));
+
+  // const defaultCookie = {
+  //   maxAge: COOKIE_LENGTH, // 1 year
+  //   httpOnly: true,
+  //   sameSite: "lax",
+  //   secure: __prod__, // cookie only works in https
+  // };
   app.use(
     session({
       name: COOKIE_NAME,
@@ -40,17 +50,19 @@ const main = async () => {
       secret: process.env.SESSION_SECRET,
       resave: false,
       cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 365 * 1, // 1 year
+        maxAge: COOKIE_LENGTH, // 1 year
         httpOnly: true,
-        sameSite: "none",
-        secure: true, // cookie only works in https
+        sameSite: usingApollo ? "none" : "lax",
+        secure: usingApollo ? true : __prod__, // cookie only works in https
       },
     })
   );
 
+  app.get("/confirm/:id", confirmEmail);
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [ContractorResolver, UserResolver, ReviewResolver],
+      resolvers: [UserResolver, ContractorResolver, ReviewResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({
@@ -64,11 +76,10 @@ const main = async () => {
 
   apolloServer.applyMiddleware({
     app,
-    // cors: {
-    //   origin: ["https://studio.apollographql.com"],
-    //   credentials: true,
-    // },
-    cors: false,
+    cors: {
+      origin: ["https://studio.apollographql.com"],
+      credentials: true,
+    },
   });
 
   app.listen(process.env.PORT, () => {
