@@ -9,8 +9,8 @@ export const confirmEmail = async (req: Request, res: Response) => {
   if (userId) {
     await User.update({ id: userId }, { confirmed: true });
     await redis.del(`${confirmAccountPrefix}${id}`);
-    res.send("ok");
+    res.send("Thank you for confirming your account");
   } else {
-    res.send("invalid");
+    res.send("Error confirming your account");
   }
 };

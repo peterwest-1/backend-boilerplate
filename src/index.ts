@@ -69,6 +69,7 @@ const main = async () => {
       req,
       res,
       redis,
+      url: req.protocol + "://" + req.get("host"),
     }),
   });
 

@@ -15,9 +15,9 @@ export async function sendEmail(email: string, url: string) {
   const mailOptions = {
     from: '"Fred Foo 👻" <foo@example.com>', // sender address
     to: email, // list of receivers
-    subject: "Change Password", // Subject line
+    subject: "Change Password | Contractor", // Subject line
     text: "Hello world?", // plain text body
-    html: `<a href="${url}">${url}</a>`, // html body
+    html: url, // html body
   };
 
   const info = await transporter.sendMail(mailOptions);

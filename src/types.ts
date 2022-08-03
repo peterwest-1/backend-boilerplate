@@ -6,4 +6,5 @@ export type MyContext = {
   req: Request & { session: Session & Partial<SessionData> & { userId?: string } };
   res: Response;
   redis: Redis;
+  url: string;
 };

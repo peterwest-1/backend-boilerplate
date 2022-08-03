@@ -7,13 +7,15 @@ import { TOKEN_ERROR } from "../shared/Errors/token";
 import { sendEmail } from "../utilities/sendMail";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { v4 } from "uuid";
-import { changePasswordPrefix, COOKIE_NAME, forgotPasswordPrefix } from "../constants";
+import { changePasswordPrefix, COOKIE_NAME } from "../constants";
 import { User } from "../entity/User";
 import { AuthenticationInput } from "../shared/AuthenticationInput";
 import { UserResponse } from "../shared/UserResponse";
 import { MyContext } from "../types";
 import { validateRegister } from "../validators/register";
 import { ACCOUNT_ERROR } from "../shared/Errors/account";
+import { createChangePasswordLink } from "../utilities/createChangePasswordLink";
+import { createConfirmationLink } from "../utilities/createConfirmationLink";
 
 @Resolver(User)
 export class UserResolver {
@@ -42,7 +44,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg("input") { email, password }: AuthenticationInput,
-    @Ctx() { req }: MyContext
+    @Ctx() { req, url }: MyContext
   ): Promise<UserResponse> {
     const errors = await validateRegister({ email, password });
     if (errors) return { errors };
@@ -54,10 +56,11 @@ export class UserResolver {
         email: email,
         password: hash,
       }).save();
+      const confirmUserLink = await createConfirmationLink(url, user.id);
+      await sendEmail(email, `<a href="${confirmUserLink}">Confirm Account</a>`);
     } catch (error) {
       if (error.code == "23505" || error.detail.includes("already exists")) return { errors: [EMAIL_ERROR.DUPLICATE] };
     }
-    // await sendEmail(input.email, await createConfirmationLink(context.url, user?.id as string));
 
     req.session.userId = user?.id;
 
@@ -107,13 +110,8 @@ export class UserResolver {
       // "If the email exists, we'll send it to that emai"
       return true;
     }
-
-    const token = v4();
-    //value for 2 days
-    //Uses ChangePasswordPrefix becuase it uses the changePassword functionality
-    await redis.set(changePasswordPrefix + token, user.id, "EX", 1000 * 60 * 60 * 24 * 2);
-
-    sendEmail(email, `<a href="http://localhost:3000/change-password/${token}">Change Password</a>`);
+    const changePassLink = await createChangePasswordLink("http://localhost:3000", user.id);
+    await sendEmail(email, `<a href="${changePassLink}">Change Password</a>`);
     return true;
   }
 
