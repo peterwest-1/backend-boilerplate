@@ -11,8 +11,8 @@ export class ReviewResolver {
   }
 
   @Query(() => Review, { nullable: true })
-  review(@Arg("id", () => Int) id: number): Promise<Review | null> {
-    return Review.findOne({ where: { id } });
+  review(@Arg("id", () => String) id: string): Promise<Review | null> {
+    return Review.findOneBy({ id });
   }
 
   @Mutation(() => Review)
@@ -27,11 +27,11 @@ export class ReviewResolver {
 
   @Mutation(() => Review, { nullable: true })
   async updateReview(
-    @Arg("id", () => Int) id: number,
+    @Arg("id", () => String) id: string,
     @Arg("input") input: ReviewInput,
     @Ctx() _: MyContext
   ): Promise<Review | null> {
-    const review = await Review.findOne({ where: { id } });
+    const review = await Review.findOneBy({ id });
     if (!review) {
       return null;
     }
@@ -48,7 +48,7 @@ export class ReviewResolver {
   }
 
   @Mutation(() => Boolean)
-  async deleteReview(@Arg("id", () => Int) id: number, @Ctx() _: MyContext): Promise<boolean> {
+  async deleteReview(@Arg("id", () => String) id: string, @Ctx() _: MyContext): Promise<boolean> {
     try {
       await Review.delete({ id });
     } catch (error) {

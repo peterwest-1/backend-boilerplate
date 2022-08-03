@@ -26,7 +26,7 @@ const main = async () => {
   redis.on("error", (err: Error) => console.log("Redis Client Error", err));
 
   app.set("trust proxy", 1);
-  //"http://localhost:3000"
+  app.use(cors({ origin: "http://localhost:3000", credentials: true }));
   app.use(cors({ origin: true, credentials: true }));
 
   app.use(
@@ -64,10 +64,11 @@ const main = async () => {
 
   apolloServer.applyMiddleware({
     app,
-    cors: {
-      origin: ["https://studio.apollographql.com"],
-      credentials: true,
-    },
+    // cors: {
+    //   origin: ["https://studio.apollographql.com"],
+    //   credentials: true,
+    // },
+    cors: false,
   });
 
   app.listen(process.env.PORT, () => {

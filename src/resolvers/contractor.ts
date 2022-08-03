@@ -23,6 +23,14 @@ export class ContractorResolver {
       userId: req.session.userId,
     }).save();
 
+    const id = req.session.userId;
+    const user = await User.findOneBy({ id });
+
+    if (user) {
+      user.contractorId = contractor.id;
+      await user?.save();
+    }
+
     return contractor;
   }
 }

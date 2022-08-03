@@ -1,7 +1,6 @@
 import argon2 from "argon2";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { COOKIE_NAME } from "../constants";
-import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
 import { AuthenticationInput } from "../shared/AuthenticationInput";
 import { DUPLICATE_EMAIL, EMAIL_DOESNT_EXIST } from "../shared/EmailErrors";
@@ -25,17 +24,13 @@ export class UserResolver {
     if (!req.session.userId) {
       return false;
     }
+    const user = await User.findOneBy({ id: req.session.userId });
 
-    const cont = await AppDataSource.getRepository(User).findOne({
-      relations: {
-        contractor: true,
-      },
-      where: {
-        id: req.session.userId,
-      },
-    });
-    console.log(cont?.email);
-    return cont ? true : false;
+    if (user) {
+      return user.contractorId ? true : false;
+    }
+
+    return false;
   }
 
   @Mutation(() => UserResponse)
