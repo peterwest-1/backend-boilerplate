@@ -1,20 +1,21 @@
 import nodemailer from "nodemailer";
 
 export async function sendEmail(email: string, url: string) {
+  let testAccount = await nodemailer.createTestAccount();
   const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: "mipp5fj52yrrai6y@ethereal.email",
-      pass: "W27uppXc7JtE7qhxJq",
+      user: testAccount.user,
+      pass: testAccount.pass,
     },
   });
 
   const mailOptions = {
     from: '"Fred Foo 👻" <foo@example.com>', // sender address
     to: email, // list of receivers
-    subject: "Hello ✔", // Subject line
+    subject: "Change Password", // Subject line
     text: "Hello world?", // plain text body
     html: `<a href="${url}">${url}</a>`, // html body
   };
