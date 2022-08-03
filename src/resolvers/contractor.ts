@@ -8,8 +8,13 @@ import { MyContext } from "../types";
 @Resolver(Contractor)
 export class ContractorResolver {
   @Query(() => Contractor, { nullable: true })
-  review(@Arg("id", () => String) id: string): Promise<Contractor | null> {
+  contractor(@Arg("id", () => String) id: string): Promise<Contractor | null> {
     return Contractor.findOneBy({ id });
+  }
+
+  @Query(() => [Contractor])
+  contractors(): Promise<Contractor[]> {
+    return Contractor.find({});
   }
 
   @Mutation(() => Contractor)

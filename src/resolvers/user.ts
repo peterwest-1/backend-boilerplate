@@ -28,7 +28,7 @@ export class UserResolver {
   }
 
   @Query(() => Boolean)
-  async contractor(@Ctx() { req }: MyContext) {
+  async iscontractor(@Ctx() { req }: MyContext) {
     if (!req.session.userId) {
       return false;
     }

@@ -12,6 +12,7 @@ import { ReviewResolver } from "./resolvers/review";
 import { UserResolver } from "./resolvers/user";
 import { confirmEmail } from "./routes/confirmEmail";
 import { MyContext } from "./types";
+import { createSchema } from "./utilities/createSchema";
 require("dotenv").config();
 
 const RedisStore = require("connect-redis")(session);
@@ -28,7 +29,7 @@ const main = async () => {
 
   app.set("trust proxy", 1);
 
-  const usingApollo = false;
+  const usingApollo = true;
 
   const apolloCors = { origin: true, credentials: true };
   app.use(cors(usingApollo ? apolloCors : { origin: "http://localhost:3000", credentials: true }));
@@ -61,10 +62,7 @@ const main = async () => {
   app.get("/confirm/:id", confirmEmail);
 
   const apolloServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [UserResolver, ContractorResolver, ReviewResolver],
-      validate: false,
-    }),
+    schema: await createSchema(),
     context: ({ req, res }): MyContext => ({
       req,
       res,
