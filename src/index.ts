@@ -2,14 +2,10 @@ import { ApolloServer } from "apollo-server-express";
 import cors from "cors";
 import express from "express";
 import session from "express-session";
-import Redis from "ioredis";
 import "reflect-metadata";
-import { buildSchema } from "type-graphql";
 import { COOKIE_LENGTH, COOKIE_NAME, __prod__ } from "./constants";
 import { AppDataSource } from "./data-source";
-import { ContractorResolver } from "./resolvers/contractor";
-import { ReviewResolver } from "./resolvers/review";
-import { UserResolver } from "./resolvers/user";
+import redis from "./redis";
 import { confirmEmail } from "./routes/confirmEmail";
 import { MyContext } from "./types";
 import { createSchema } from "./utilities/createSchema";
@@ -23,9 +19,6 @@ const main = async () => {
   await connection.runMigrations();
 
   const app = express();
-  const redis = new Redis(process.env.REDIS_URL);
-  redis.on("connect", () => console.log("CONTRACTOR Server: Connected to Redis!"));
-  redis.on("error", (err: Error) => console.log("Redis Client Error", err));
 
   app.set("trust proxy", 1);
 

@@ -1,6 +1,6 @@
 import { confirmAccountPrefix, TOKEN_EXPIRY } from "../constants";
 import { v4 } from "uuid";
-import { redis } from "../redis";
+import redis from "../redis";
 
 export const createConfirmationLink = async (url: string, userId: string) => {
   const token = v4();

@@ -1,21 +1,19 @@
 import argon2 from "argon2";
-import { redis } from "../redis";
-import { ChangePasswordInput } from "../shared/ChangePasswordInput";
-import { EMAIL_ERROR } from "../shared/Errors/email";
-import { PASSWORD_ERROR } from "../shared/Errors/password";
-import { TOKEN_ERROR } from "../shared/Errors/token";
-import { sendEmail } from "../utilities/sendMail";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
-import { v4 } from "uuid";
 import { changePasswordPrefix, COOKIE_NAME } from "../constants";
 import { User } from "../entity/User";
 import { AuthenticationInput } from "../shared/AuthenticationInput";
+import { ChangePasswordInput } from "../shared/ChangePasswordInput";
+import { ACCOUNT_ERROR } from "../shared/Errors/account";
+import { EMAIL_ERROR } from "../shared/Errors/email";
+import { PASSWORD_ERROR } from "../shared/Errors/password";
+import { TOKEN_ERROR } from "../shared/Errors/token";
 import { UserResponse } from "../shared/UserResponse";
 import { MyContext } from "../types";
-import { validateRegister } from "../validators/register";
-import { ACCOUNT_ERROR } from "../shared/Errors/account";
 import { createChangePasswordLink } from "../utilities/createChangePasswordLink";
 import { createConfirmationLink } from "../utilities/createConfirmationLink";
+import { sendEmail } from "../utilities/sendMail";
+import { validateRegister } from "../validators/register";
 
 @Resolver(User)
 export class UserResolver {
@@ -25,20 +23,6 @@ export class UserResolver {
       return null;
     }
     return User.findOneBy({ id: req.session.userId });
-  }
-
-  @Query(() => Boolean)
-  async iscontractor(@Ctx() { req }: MyContext) {
-    if (!req.session.userId) {
-      return false;
-    }
-    const user = await User.findOneBy({ id: req.session.userId });
-
-    if (user) {
-      return user.contractorId ? true : false;
-    }
-
-    return false;
   }
 
   @Mutation(() => UserResponse)
@@ -89,7 +73,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   logout(@Ctx() { req, res }: MyContext) {
     return new Promise((resolve, reject) =>
-      req.session.destroy((err) => {
+      req.session.destroy((err: Error) => {
         res.clearCookie(COOKIE_NAME);
         if (err) {
           reject(false);
