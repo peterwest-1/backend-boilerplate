@@ -29,7 +29,7 @@ const main = async () => {
 
   app.set("trust proxy", 1);
 
-  const usingApollo = true;
+  const usingApollo = false;
 
   const apolloCors = { origin: true, credentials: true };
   app.use(cors(usingApollo ? apolloCors : { origin: "http://localhost:3000", credentials: true }));
