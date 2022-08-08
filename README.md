@@ -1,24 +1,43 @@
-# Contractor Backend
+# Backend Boilerplate
 
-### Developement
+Server boilerplate using TypeORM TypeGraphQL Apollo Redis GraphQL Postgres.
 
-Start PostgreSQL
-Start Redis
+## Installation
 
-For Me locally
-
-```
-redis-server
-```
-
-Run
+- Requires `Redis` and `Postgres`
+- Clone repository
 
 ```
-yarn watch
+git clone https://github.com/peterwest-1/backend-boilerplate.git
 ```
 
-then
+- Change directory
+
+```
+cd backend-boilerplate
+```
+
+- Install dependancies
+
+```
+yarn
+```
+
+- Create database and change config in `src/data-source.ts` accordingly
+- Start the server
 
 ```
 yarn dev
 ```
+
+## Consider changing
+
+Return type of ChangePassword resolver from User to UserResponse
+
+## Usage
+
+- Change ForgotPasswordResolver email to link forgot email on front end
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
