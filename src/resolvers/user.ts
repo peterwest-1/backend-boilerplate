@@ -1,6 +1,7 @@
 import argon2 from "argon2";
+import redis from "../redis";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
-import { changePasswordPrefix, COOKIE_NAME } from "../constants";
+import { changePasswordPrefix, COOKIE_NAME, redisSessionPrefix, userSessionIDPrefix } from "../constants";
 import { User } from "../entity/User";
 import { AuthenticationInput } from "../shared/AuthenticationInput";
 import { ChangePasswordInput } from "../shared/ChangePasswordInput";
@@ -14,6 +15,8 @@ import { createChangePasswordLink } from "../utilities/createChangePasswordLink"
 import { createConfirmationLink } from "../utilities/createConfirmationLink";
 import { sendEmail } from "../utilities/sendMail";
 import { validateRegister } from "../validators/register";
+import { removeUserSessions } from "../utilities/removeUserSessions";
+import { forgotPasswordLockAccount } from "../utilities/forgotPasswordLockAccount";
 
 @Resolver(User)
 export class UserResolver {
@@ -47,6 +50,9 @@ export class UserResolver {
     }
 
     req.session.userId = user?.id;
+    if (user) {
+      redis.lpush(user.id, req.sessionID);
+    }
 
     return { user };
   }
@@ -60,12 +66,17 @@ export class UserResolver {
 
     if (!user) return { errors: [EMAIL_ERROR.DOESNT_EXIST] };
 
+    if (user.forgotPasswordLocked) {
+      return { errors: [ACCOUNT_ERROR.FORGOT_PASSWORD_LOCKED] };
+    }
+
     const valid = await argon2.verify(user.password, password);
 
     if (!valid) return { errors: [PASSWORD_ERROR.DOESNT_MATCH] };
     // if (!user.confirmed) return { errors: [ACCOUNT_NOT_VERIFIED] };
 
     req.session.userId = user.id;
+    redis.lpush(`${userSessionIDPrefix}${user.id}`, req.sessionID);
 
     return { user };
   }
@@ -84,6 +95,18 @@ export class UserResolver {
     );
   }
 
+  //Needs to be tested
+  @Mutation(() => Boolean)
+  async logoutAll(@Ctx() { req }: MyContext) {
+    const { userId } = req.session;
+    if (userId) {
+      await removeUserSessions(userId);
+      return true;
+    }
+
+    return false;
+  }
+
   @Mutation(() => Boolean)
   async forgotPassword(@Arg("email") email: string) {
     const user = await User.findOne({ where: { email } });
@@ -94,6 +117,8 @@ export class UserResolver {
       // "If the email exists, we'll send it to that emai"
       return true;
     }
+
+    await forgotPasswordLockAccount(user.id);
     const changePassLink = await createChangePasswordLink("http://localhost:3000", user.id);
     await sendEmail(email, `<a href="${changePassLink}">Change Password</a>`);
     return true;

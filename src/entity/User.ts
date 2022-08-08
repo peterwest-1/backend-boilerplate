@@ -19,6 +19,10 @@ export class User extends BaseEntity {
   @Column("bool", { default: false })
   confirmed: boolean;
 
+  @Field(() => Boolean, { description: "Locked out due to Forgot Password" })
+  @Column("bool", { default: false })
+  forgotPasswordLocked: boolean;
+
   @Field(() => Date)
   @CreateDateColumn()
   createdAt: Date;
