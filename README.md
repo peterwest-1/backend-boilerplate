@@ -2,6 +2,11 @@
 
 Server boilerplate using TypeORM TypeGraphQL Apollo Redis GraphQL Postgres.
 
+## To Do
+
+- Add tests
+
+
 ## Installation
 
 - Requires `Redis` and `Postgres`
