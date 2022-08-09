@@ -22,7 +22,7 @@ const main = async () => {
 
   app.set("trust proxy", 1);
 
-  const usingApollo = false;
+  const usingApollo = true;
 
   const apolloCors = { origin: true, credentials: true };
   app.use(cors(usingApollo ? apolloCors : { origin: "http://localhost:3000", credentials: true }));
@@ -75,7 +75,7 @@ const main = async () => {
   });
 
   app.listen(process.env.PORT, () => {
-    console.log(`CONTRACTOR Server: Started on localhost:${process.env.PORT}`);
+    console.log(`BOILERPLATE Server: Started on localhost:${process.env.PORT}`);
   });
 };
 
