@@ -3,7 +3,7 @@ import cors from "cors";
 import express from "express";
 import session from "express-session";
 import "reflect-metadata";
-import { COOKIE_LENGTH, COOKIE_NAME, __prod__ } from "./constants";
+import { APP_NAME, COOKIE_LENGTH, COOKIE_NAME, __prod__ } from "./constants";
 import { AppDataSource } from "./data-source";
 import redis from "./redis";
 import { confirmEmail } from "./routes/confirmEmail";
@@ -75,7 +75,7 @@ const main = async () => {
   });
 
   app.listen(process.env.PORT, () => {
-    console.log(`BOILERPLATE Server: Started on localhost:${process.env.PORT}`);
+    console.log(`${APP_NAME} Server: Started on localhost:${process.env.PORT}`);
   });
 };
 
