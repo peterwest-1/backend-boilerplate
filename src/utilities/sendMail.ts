@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
+import { MailOptions } from "../types";
 
-export async function sendEmail(email: string, url: string) {
+export async function sendEmail(mailOptions: MailOptions) {
   let testAccount = await nodemailer.createTestAccount();
   const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
@@ -12,13 +13,13 @@ export async function sendEmail(email: string, url: string) {
     },
   });
 
-  const mailOptions = {
-    from: '"Fred Foo 👻" <foo@example.com>', // sender address
-    to: email, // list of receivers
-    subject: "Change Password | Contractor", // Subject line
-    text: "Hello world?", // plain text body
-    html: url, // html body
-  };
+  // const mailOptions = {
+  //   from: '"Fred Foo 👻" <foo@example.com>', // sender address
+  //   to: toEmail, // list of receivers
+  //   subject: "Change Password | Contractor", // Subject line
+  //   text: "Hello world?", // plain text body
+  //   html: url, // html body
+  // };
 
   const info = await transporter.sendMail(mailOptions);
 

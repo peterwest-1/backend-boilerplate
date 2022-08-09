@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { confirmAccountPrefix } from "../constants";
+import { APP_NAME, confirmAccountPrefix } from "../constants";
 import { User } from "../entity/User";
 import redis from "../redis";
 
