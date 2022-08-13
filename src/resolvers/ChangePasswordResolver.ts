@@ -1,4 +1,5 @@
 import argon2 from "argon2";
+import { removeUserSessions } from "src/utilities/removeUserSessions";
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import { changePasswordPrefix } from "../constants";
 import { User } from "../entity/User";
@@ -38,6 +39,8 @@ export class ChangePasswordResolver {
         errors: [TOKEN_ERROR.INVALID_EXPIRED],
       };
     }
+
+    await removeUserSessions(user.id);
 
     if (user.forgotPasswordLocked) {
       await User.update({ id: userId }, { forgotPasswordLocked: false });

@@ -19,9 +19,6 @@ export class ForgotPasswordResolver {
     }
     const changePassLink = await createChangePasswordLink("http://localhost:3000", user.id);
 
-    //POTENTIALLY
-    await forgotPasswordLockAccount(user.id);
-
     const changePassMailOptions = generateResetMailOptions(email, changePassLink);
     await sendEmail(changePassMailOptions);
     return true;
