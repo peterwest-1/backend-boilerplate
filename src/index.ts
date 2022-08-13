@@ -2,7 +2,6 @@ import { ApolloServer } from "apollo-server-express";
 import cors from "cors";
 import express from "express";
 import session from "express-session";
-import { graphqlUploadExpress } from "graphql-upload";
 import "reflect-metadata";
 import { APP_NAME, COOKIE_LENGTH, COOKIE_NAME, __prod__ } from "./constants";
 import { AppDataSource } from "./data-source";
@@ -67,8 +66,6 @@ const main = async () => {
   });
 
   await apolloServer.start();
-
-  app.use(graphqlUploadExpress());
 
   apolloServer.applyMiddleware({
     app,
