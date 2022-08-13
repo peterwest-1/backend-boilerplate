@@ -1,9 +1,9 @@
 import { Arg, Mutation, Resolver } from "type-graphql";
-import { User } from "../entity/User";
-import { createChangePasswordLink } from "../utilities/createChangePasswordLink";
-import { forgotPasswordLockAccount } from "../utilities/forgotPasswordLockAccount";
-import { generateResetMailOptions } from "../utilities/generateMailOptions";
-import { sendEmail } from "../utilities/sendMail";
+import { User } from "../../entity/User";
+import { createChangePasswordLink } from "../../utilities/createChangePasswordLink";
+import { forgotPasswordLockAccount } from "../../utilities/forgotPasswordLockAccount";
+import { generateResetMailOptions } from "../../utilities/generateMailOptions";
+import { sendEmail } from "../../utilities/sendMail";
 
 @Resolver(User)
 export class ForgotPasswordResolver {

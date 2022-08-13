@@ -1,19 +1,19 @@
 import argon2 from "argon2";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
-import { COOKIE_NAME, userSessionIDPrefix } from "../constants";
-import { User } from "../entity/User";
-import redis from "../redis";
-import { AuthenticationInput } from "../shared/AuthenticationInput";
-import { ACCOUNT_ERROR } from "../shared/Errors/account";
-import { EMAIL_ERROR } from "../shared/Errors/email";
-import { PASSWORD_ERROR } from "../shared/Errors/password";
-import { UserResponse } from "../shared/UserResponse";
-import { MyContext } from "../types";
-import { createConfirmationLink } from "../utilities/createConfirmationLink";
-import { generateVerifyMailOptions } from "../utilities/generateMailOptions";
-import { removeUserSessions } from "../utilities/removeUserSessions";
-import { sendEmail } from "../utilities/sendMail";
-import { validateRegister } from "../validators/register";
+import { COOKIE_NAME, userSessionIDPrefix } from "../../constants";
+import { User } from "../../entity/User";
+import redis from "../../redis";
+import { AuthenticationInput } from "../../shared/AuthenticationInput";
+import { ACCOUNT_ERROR } from "../../shared/Errors/account";
+import { EMAIL_ERROR } from "../../shared/Errors/email";
+import { PASSWORD_ERROR } from "../../shared/Errors/password";
+import { UserResponse } from "../../shared/UserResponse";
+import { MyContext } from "../../types";
+import { createConfirmationLink } from "../../utilities/createConfirmationLink";
+import { generateVerifyMailOptions } from "../../utilities/generateMailOptions";
+import { removeUserSessions } from "../../utilities/removeUserSessions";
+import { sendEmail } from "../../utilities/sendMail";
+import { validateRegister } from "../../validators/register";
 
 @Resolver(User)
 export class UserResolver {

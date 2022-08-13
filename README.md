@@ -6,7 +6,6 @@ Server boilerplate using TypeORM TypeGraphQL Apollo Redis GraphQL Postgres.
 
 - Add tests
 
-
 ## Installation
 
 - Requires `Redis` and `Postgres`
@@ -36,8 +35,6 @@ yarn dev
 ```
 
 ## Consider changing
-
-Return type of ChangePassword resolver from User to UserResponse
 
 ## Usage
 
