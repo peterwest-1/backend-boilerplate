@@ -62,6 +62,7 @@ const main = async () => {
       redis,
       url: req.protocol + "://" + req.get("host"),
     }),
+    csrfPrevention: false, //TODO: change to true later
   });
 
   await apolloServer.start();
